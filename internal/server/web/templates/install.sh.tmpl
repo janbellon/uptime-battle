@@ -1,0 +1,105 @@
+#!/bin/sh
+# Uptime Battle agent installer.
+# Usage: install.sh --method systemd|cron --name NAME
+set -eu
+
+SERVER='{{.PublicURL}}'
+METHOD=''
+NAME=''
+
+die() { echo "error: $*" >&2; exit 1; }
+
+while [ $# -gt 0 ]; do
+	case "$1" in
+	--method) [ $# -ge 2 ] || die "--method needs a value"; METHOD=$2; shift 2 ;;
+	--name) [ $# -ge 2 ] || die "--name needs a value"; NAME=$2; shift 2 ;;
+	*) die "unknown option: $1" ;;
+	esac
+done
+
+case "$METHOD" in systemd | cron) ;; *) die "--method must be systemd or cron" ;; esac
+printf '%s' "$NAME" | grep -Eq '^[a-zA-Z0-9][a-zA-Z0-9_.-]{2,31}$' ||
+	die "--name must be 3 to 32 characters among a-z A-Z 0-9 _ . -"
+
+[ "$(uname -s)" = Linux ] || die "only Linux is supported"
+case "$(uname -m)" in
+x86_64) ARCH=amd64 ;;
+aarch64 | arm64) ARCH=arm64 ;;
+armv7l) ARCH=armv7 ;;
+*) die "unsupported architecture: $(uname -m)" ;;
+esac
+
+command -v curl >/dev/null || die "curl is required"
+command -v sha256sum >/dev/null || die "sha256sum is required"
+
+FILE="uptime-battle-agent-linux-$ARCH"
+TMP=$(mktemp -d)
+trap 'rm -rf "$TMP"' EXIT
+
+echo "Downloading $FILE"
+curl -fsSL "$SERVER/dl/$FILE" -o "$TMP/$FILE"
+curl -fsSL "$SERVER/dl/SHA256SUMS" -o "$TMP/SHA256SUMS"
+(cd "$TMP" && grep " $FILE\$" SHA256SUMS | sha256sum -c -) >/dev/null || die "checksum mismatch"
+chmod 755 "$TMP/$FILE"
+
+if [ "$METHOD" = systemd ]; then
+	[ "$(id -u)" = 0 ] || die "the systemd method must run as root"
+	command -v systemctl >/dev/null || die "systemctl not found, use --method cron"
+	BIN=/usr/local/bin/uptime-battle-agent
+	STATE=/var/lib/uptime-battle
+	id uptime-battle >/dev/null 2>&1 ||
+		useradd --system --no-create-home --home-dir "$STATE" --shell /usr/sbin/nologin uptime-battle
+	install -m 755 "$TMP/$FILE" "$BIN"
+	install -d -m 700 -o uptime-battle -g uptime-battle "$STATE"
+	if [ ! -e "$STATE/identity.json" ]; then
+		"$BIN" enroll --server "$SERVER" --name "$NAME" --state-dir "$STATE"
+		chown uptime-battle:uptime-battle "$STATE/identity.json"
+	fi
+	cat >/etc/systemd/system/uptime-battle-agent.service <<'UNIT'
+[Unit]
+Description=Uptime Battle agent
+Wants=network-online.target
+After=network-online.target
+
+[Service]
+User=uptime-battle
+ExecStart=/usr/local/bin/uptime-battle-agent run --state-dir /var/lib/uptime-battle
+Restart=always
+RestartSec=10
+NoNewPrivileges=yes
+ProtectSystem=strict
+ProtectHome=yes
+PrivateTmp=yes
+PrivateDevices=yes
+ProtectKernelTunables=yes
+ProtectKernelModules=yes
+ProtectControlGroups=yes
+RestrictAddressFamilies=AF_INET AF_INET6 AF_UNIX
+RestrictNamespaces=yes
+LockPersonality=yes
+MemoryDenyWriteExecute=yes
+SystemCallArchitectures=native
+CapabilityBoundingSet=
+ReadWritePaths=/var/lib/uptime-battle
+
+[Install]
+WantedBy=multi-user.target
+UNIT
+	systemctl daemon-reload
+	systemctl enable --now uptime-battle-agent.service
+	echo "Agent running. Logs: journalctl -u uptime-battle-agent -f"
+else
+	command -v crontab >/dev/null || die "crontab not found"
+	BIN="$HOME/.local/bin/uptime-battle-agent"
+	STATE="$HOME/.local/state/uptime-battle"
+	mkdir -p "$HOME/.local/bin"
+	install -m 755 "$TMP/$FILE" "$BIN"
+	if [ ! -e "$STATE/identity.json" ]; then
+		"$BIN" enroll --server "$SERVER" --name "$NAME" --state-dir "$STATE"
+	fi
+	LINE="*/5 * * * * $BIN once --quiet --state-dir $STATE"
+	{ crontab -l 2>/dev/null | grep -v 'uptime-battle-agent' || true; echo "$LINE"; } | crontab -
+	"$BIN" once --state-dir "$STATE"
+	echo "Cron job installed."
+fi
+echo "Your machine: $SERVER/m/$NAME"

@@ -1,0 +1,42 @@
+{{define "content"}}
+<section class="hero hero-left">
+  <h1>Installer l'agent</h1>
+  <p>Un binaire statique, sans dépendance, qui tourne sans privilèges et ne lit que l'uptime et l'identifiant de démarrage du noyau. Linux amd64, arm64 et armv7.</p>
+</section>
+
+<div class="notes">
+  <p><strong>Choisissez bien votre nom.</strong> De 3 à 32 caractères parmi <code>a-z A-Z 0-9 _ . -</code>, public et définitif. L'inscription résout un petit calcul : comptez quelques secondes.</p>
+</div>
+
+<section class="method">
+  <div class="method-head"><span class="pill">Recommandé</span><h2>systemd</h2></div>
+  <p>Le service démarre avec la machine et envoie un battement chaque minute. À lancer en root.</p>
+  <pre class="code"><code>curl -fsSL {{.PublicURL}}/install.sh | sudo sh -s -- --method systemd --name VOTRE-NOM</code></pre>
+</section>
+
+<section class="method">
+  <div class="method-head"><h2>Cron</h2></div>
+  <p>Sans service ni root : un battement toutes les cinq minutes depuis votre crontab utilisateur.</p>
+  <pre class="code"><code>curl -fsSL {{.PublicURL}}/install.sh | sh -s -- --method cron --name VOTRE-NOM</code></pre>
+</section>
+
+<section class="method">
+  <div class="method-head"><h2>Docker</h2></div>
+  <p>Le conteneur lit l'uptime de l'hôte. Le volume garde la clé de la machine : le perdre, c'est perdre son identité.</p>
+  <pre class="code"><code>docker run -d --name uptime-battle-agent --restart unless-stopped \
+  --read-only --cap-drop ALL --security-opt no-new-privileges \
+  -e UB_SERVER={{.PublicURL}} -e UB_NAME=VOTRE-NOM \
+  -v uptime-battle:/var/lib/uptime-battle \
+  {{.AgentImage}}</code></pre>
+</section>
+
+<section class="method">
+  <div class="method-head"><h2>Manuel</h2></div>
+  <p>Pour relire avant d'exécuter : téléchargez le binaire et vérifiez son empreinte.</p>
+  <pre class="code"><code>curl -fsSLO {{.PublicURL}}/dl/uptime-battle-agent-linux-amd64
+curl -fsSL {{.PublicURL}}/dl/SHA256SUMS | sha256sum -c --ignore-missing
+chmod +x uptime-battle-agent-linux-amd64
+./uptime-battle-agent-linux-amd64 enroll --server {{.PublicURL}} --name VOTRE-NOM
+./uptime-battle-agent-linux-amd64 run</code></pre>
+</section>
+{{end}}

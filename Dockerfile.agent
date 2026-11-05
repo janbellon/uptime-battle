@@ -1,0 +1,23 @@
+# Agent container: reads the host's uptime through /proc, needs no privileges.
+FROM --platform=$BUILDPLATFORM docker.io/library/golang:1.26-alpine AS build
+WORKDIR /src
+COPY go.mod go.sum ./
+RUN go mod download
+COPY . .
+ARG TARGETOS=linux
+ARG TARGETARCH=amd64
+ARG VERSION=dev
+ENV CGO_ENABLED=0
+RUN GOOS=$TARGETOS GOARCH=$TARGETARCH go build -trimpath \
+    -ldflags "-s -w -X main.version=$VERSION" -o /out/agent ./cmd/agent
+RUN mkdir -p /out/state
+
+FROM scratch
+COPY --from=build /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/
+COPY --from=build /out/agent /uptime-battle-agent
+COPY --from=build --chown=65532:65532 /out/state /var/lib/uptime-battle
+USER 65532:65532
+ENV UB_STATE_DIR=/var/lib/uptime-battle
+VOLUME /var/lib/uptime-battle
+ENTRYPOINT ["/uptime-battle-agent"]
+CMD ["run"]

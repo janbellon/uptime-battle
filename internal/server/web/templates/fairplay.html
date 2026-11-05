@@ -1,0 +1,20 @@
+{{define "content"}}
+<section class="hero hero-left">
+  <h1>Fair-play</h1>
+  <p>Votre machine vous appartient, donc vous pouvez modifier l'agent. Le jeu part de ce principe : le serveur ne croit rien sur parole.</p>
+</section>
+
+<section class="grid2">
+  <article class="card"><h2>Le score, c'est le temps observé</h2><p>Le classement ne lit jamais l'uptime annoncé. Il mesure le temps pendant lequel le serveur vous a vu répondre, avec sa propre horloge. Une machine qui annonce 400 jours démarre à zéro comme les autres.</p></article>
+  <article class="card"><h2>Pas de voyage dans le temps</h2><p>Personne ne gagne plus d'une seconde par seconde, et personne ne peut dépasser sa date d'inscription. Pour afficher un an, il faut tenir un an.</p></article>
+  <article class="card"><h2>Chaque battement est signé</h2><p>La clé Ed25519 est générée sur votre machine et n'en sort pas. Le serveur envoie un défi à usage unique, valable une minute. Un battement ne peut être ni forgé, ni rejoué, ni préparé à l'avance.</p></article>
+  <article class="card"><h2>Ce qui remet à zéro</h2><p>Un nouvel identifiant de démarrage du noyau, un uptime qui recule ou qui n'avance pas au rythme de l'horloge du serveur, ou plus de {{.MaxGap}} minutes de silence. Une panne du serveur ne vous pénalise pas.</p></article>
+  <article class="card"><h2>Un démarrage, une machine</h2><p>Une même session de noyau ne peut pas courir sous deux noms. Une clé copiée sur deux machines se sabote toute seule : les identifiants de démarrage alternent et la série repart à zéro.</p></article>
+  <article class="card"><h2>Inscriptions freinées</h2><p>Chaque inscription coûte une preuve de travail et reste limitée par adresse IP. Remplir le classement de faux comptes n'apporte rien : ils partent tous de zéro.</p></article>
+</section>
+
+<section class="panel panel-text">
+  <h2>La limite, sans détour</h2>
+  <p>Un agent modifié peut mentir sur l'identifiant de démarrage et masquer un redémarrage rapide. Il peut aussi tourner sur un serveur très disponible plutôt que sur votre PC. Sans puce de confiance, aucun logiciel ne peut l'empêcher. Mais ce tricheur doit quand même garder un programme en ligne, sans interruption, pendant toute la durée affichée. Il n'obtient aucun raccourci dans le temps.</p>
+</section>
+{{end}}

@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{{.Title}} · Uptime Battle</title>
+<meta name="description" content="Le classement des machines qui ne s'éteignent jamais.">
+<meta name="color-scheme" content="dark">
+<link rel="icon" href="/static/logo.svg" type="image/svg+xml">
+<link rel="stylesheet" href="/static/app.css?v={{.AssetVersion}}">
+<script src="/static/app.js?v={{.AssetVersion}}" defer></script>
+</head>
+<body>
+<header class="nav">
+  <div class="wrap nav-in">
+    <a class="brand" href="/"><img src="/static/logo.svg" alt="" width="26" height="26"><span>Uptime Battle</span></a>
+    <nav aria-label="Navigation principale">
+      <a href="/" {{if eq .Nav "board"}}aria-current="page"{{end}}>Classement</a>
+      <a href="/fair-play" {{if eq .Nav "fairplay"}}aria-current="page"{{end}}>Fair-play</a>
+      <a class="btn btn-sm" href="/install" {{if eq .Nav "install"}}aria-current="page"{{end}}>Rejoindre</a>
+    </nav>
+  </div>
+</header>
+<main class="wrap">
+{{template "content" .}}
+</main>
+<footer class="wrap foot">
+  <span>Uptime Battle</span>
+  <span>Aucun compte, aucun cookie, aucune adresse IP conservée.</span>
+</footer>
+</body>
+</html>

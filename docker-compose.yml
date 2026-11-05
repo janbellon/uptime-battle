@@ -1,0 +1,41 @@
+# Set UB_DOMAIN, then: docker compose up -d --build
+# Caddy obtains the TLS certificate and is the only container exposed.
+services:
+  app:
+    build: .
+    restart: unless-stopped
+    environment:
+      UB_PUBLIC_URL: https://${UB_DOMAIN:?set UB_DOMAIN to your domain}
+      UB_TRUSTED_HOPS: "1"
+      UB_AGENT_IMAGE: ${UB_AGENT_IMAGE:-uptime-battle-agent:latest}
+    volumes:
+      - data:/data
+    read_only: true
+    tmpfs:
+      - /tmp:size=16m
+    cap_drop: [ALL]
+    security_opt:
+      - no-new-privileges:true
+    mem_limit: 256m
+    pids_limit: 128
+
+  caddy:
+    image: docker.io/library/caddy:2-alpine
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+      - "443:443/udp"
+    environment:
+      UB_DOMAIN: ${UB_DOMAIN}
+    volumes:
+      - ./deploy/Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+    depends_on:
+      - app
+
+volumes:
+  data:
+  caddy_data:
+  caddy_config:

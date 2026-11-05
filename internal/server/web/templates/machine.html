@@ -1,0 +1,34 @@
+{{define "content"}}
+<p class="crumb"><a href="/">Classement</a> / {{.M.Name}}</p>
+<div class="title-row">
+  <h1>{{.M.Name}}</h1>
+  {{if .Online}}<span class="st st-on"><i></i>En ligne</span>
+  {{else if .Alive}}<span class="st st-wait"><i></i>En sursis</span>
+  {{else}}<span class="st st-off"><i></i>Hors course</span>{{end}}
+</div>
+
+<section class="tiles" aria-label="Statistiques de la machine">
+  <div class="tile tile-hero">
+    <span class="tile-label">Uptime vérifié</span>
+    <span class="tile-value mono" {{if .Online}}data-tick="{{.StreakMs}}"{{end}}>{{duration .StreakMs}}</span>
+    <span class="tile-sub">{{if .Rank}}Rang {{.Rank}}{{else}}Non classée{{end}}</span>
+  </div>
+  <div class="tile"><span class="tile-label">Record</span><span class="tile-value mono tile-value-sm">{{duration .M.BestMs}}</span><span class="tile-sub">meilleure série</span></div>
+  <div class="tile"><span class="tile-label">Temps cumulé</span><span class="tile-value mono tile-value-sm">{{duration .M.TotalMs}}</span><span class="tile-sub">toutes séries</span></div>
+  <div class="tile"><span class="tile-label">Uptime déclaré</span><span class="tile-value mono tile-value-sm">{{duration .M.LastUptime}}</span><span class="tile-sub">non vérifié, hors score</span></div>
+</section>
+
+<section class="panel">
+  <div class="panel-head"><h2>Séries terminées</h2><span class="muted small">Inscrite le {{datetime .M.CreatedAt}}</span></div>
+  {{if .History}}
+  <table class="board">
+    <thead><tr><th scope="col">Début</th><th class="c-opt" scope="col">Fin</th><th scope="col">Cause</th><th class="c-num" scope="col">Durée</th></tr></thead>
+    <tbody>
+    {{range .History}}
+    <tr><td>{{datetime .Start}}</td><td class="c-opt">{{datetime .End}}</td><td>{{reason .Reason}}</td><td class="c-num mono">{{duration (sub .End .Start)}}</td></tr>
+    {{end}}
+    </tbody>
+  </table>
+  {{else}}<div class="empty"><p>Aucune série terminée. Pourvu que ça dure.</p></div>{{end}}
+</section>
+{{end}}

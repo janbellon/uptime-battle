@@ -1,0 +1,70 @@
+{{define "content"}}
+<section class="hero">
+  <h1>Qui tiendra le plus longtemps&nbsp;?</h1>
+  <p>Chaque seconde est vérifiée par le serveur. Un redémarrage, et le compteur retombe à zéro.</p>
+</section>
+
+<section class="tiles" aria-label="Chiffres clés">
+  <div class="tile tile-hero">
+    <span class="tile-label">Leader actuel</span>
+    {{if .Snap.Racing}}{{with index .Snap.Racing 0}}
+    <span class="tile-value mono" {{if .Online}}data-tick="{{.StreakMs}}"{{end}}>{{duration .StreakMs}}</span>
+    <a class="tile-sub" href="/m/{{.Name}}">{{.Name}}</a>
+    {{end}}{{else}}
+    <span class="tile-value mono">--:--:--</span>
+    <span class="tile-sub">Place à prendre</span>
+    {{end}}
+  </div>
+  <div class="tile"><span class="tile-label">En course</span><span class="tile-value mono">{{.Racing}}</span><span class="tile-sub">{{.Snap.Online}} en ligne</span></div>
+  <div class="tile"><span class="tile-label">Inscrites</span><span class="tile-value mono">{{.Snap.Totals.Machines}}</span><span class="tile-sub">machines</span></div>
+  <div class="tile"><span class="tile-label">Temps cumulé</span><span class="tile-value mono tile-value-sm">{{duration .Snap.Totals.TotalMs}}</span><span class="tile-sub">vérifié par le serveur</span></div>
+</section>
+
+<section class="panel">
+  <div class="panel-head">
+    <div class="tabs">
+      <a href="/" {{if eq .Tab "racing"}}aria-current="page"{{end}}>En course</a>
+      <a href="/records" {{if eq .Tab "records"}}aria-current="page"{{end}}>Records</a>
+    </div>
+    <span class="muted small">{{if eq .Tab "racing"}}Séries en cours{{else}}Meilleures séries de tous les temps{{end}} · top 100</span>
+  </div>
+  {{if .Rows}}
+  <table class="board">
+    <thead><tr>
+      <th class="c-rank" scope="col">#</th><th scope="col">Machine</th>
+      <th class="c-status" scope="col">État</th>
+      <th class="c-num" scope="col">{{if eq .Tab "racing"}}Uptime vérifié{{else}}Record{{end}}</th>
+      {{if eq .Tab "racing"}}<th class="c-num c-opt" scope="col">Record</th>{{end}}
+    </tr></thead>
+    <tbody>
+    {{range .Rows}}
+    <tr class="{{if le .Rank 3}}top{{end}}">
+      <td class="c-rank mono">{{.Rank}}</td>
+      <td class="c-name">
+        <a href="/m/{{.Name}}">{{.Name}}</a>
+        <progress class="bar" max="100" value="{{pct .BarPct}}" aria-hidden="true"></progress>
+      </td>
+      <td class="c-status">
+        {{if .Online}}<span class="st st-on"><i></i>En ligne</span>
+        {{else if .Racing}}<span class="st st-wait"><i></i>En sursis</span>
+        {{else}}<span class="st st-off"><i></i>Hors course</span>{{end}}
+      </td>
+      {{if eq $.Tab "racing"}}
+      <td class="c-num mono" {{if .Online}}data-tick="{{.StreakMs}}"{{end}}>{{duration .StreakMs}}</td>
+      <td class="c-num c-opt mono muted">{{duration .BestMs}}</td>
+      {{else}}
+      <td class="c-num mono">{{duration .BestMs}}</td>
+      {{end}}
+    </tr>
+    {{end}}
+    </tbody>
+  </table>
+  {{else}}
+  <div class="empty">
+    <h2>{{if eq .Tab "racing"}}Personne en course pour l'instant{{else}}Aucun record pour l'instant{{end}}</h2>
+    <p>Installez l'agent et prenez la première place.</p>
+    <a class="btn" href="/install">Installer l'agent</a>
+  </div>
+  {{end}}
+</section>
+{{end}}
