@@ -1,8 +1,9 @@
 # Set UB_DOMAIN, then: docker compose up -d --build
 # Caddy obtains the TLS certificate and is the only container exposed.
 services:
-  app:
-    build: .
+  uptime-battle:
+    container_name: uptime-battle
+    image: ghcr.io/janbellon/uptime-battle:v0.1.0
     restart: unless-stopped
     environment:
       UB_PUBLIC_URL: https://${UB_DOMAIN:?set UB_DOMAIN to your domain}
