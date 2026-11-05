@@ -1,20 +1,20 @@
 {{define "content"}}
 <section class="hero hero-left">
-  <h1>Fair-play</h1>
-  <p>Votre machine vous appartient, donc vous pouvez modifier l'agent. Le jeu part de ce principe : le serveur ne croit rien sur parole.</p>
+  <h1>Fair play</h1>
+  <p>Your machine belongs to you, so you can modify the agent. The game starts from that principle: the server takes nothing on trust.</p>
 </section>
 
 <section class="grid2">
-  <article class="card"><h2>Le score, c'est le temps observé</h2><p>Le classement ne lit jamais l'uptime annoncé. Il mesure le temps pendant lequel le serveur vous a vu répondre, avec sa propre horloge. Une machine qui annonce 400 jours démarre à zéro comme les autres.</p></article>
-  <article class="card"><h2>Pas de voyage dans le temps</h2><p>Personne ne gagne plus d'une seconde par seconde, et personne ne peut dépasser sa date d'inscription. Pour afficher un an, il faut tenir un an.</p></article>
-  <article class="card"><h2>Chaque battement est signé</h2><p>La clé Ed25519 est générée sur votre machine et n'en sort pas. Le serveur envoie un défi à usage unique, valable une minute. Un battement ne peut être ni forgé, ni rejoué, ni préparé à l'avance.</p></article>
-  <article class="card"><h2>Ce qui remet à zéro</h2><p>Un nouvel identifiant de démarrage du noyau, un uptime qui recule ou qui n'avance pas au rythme de l'horloge du serveur, ou plus de {{.MaxGap}} minutes de silence. Une panne du serveur ne vous pénalise pas.</p></article>
-  <article class="card"><h2>Un démarrage, une machine</h2><p>Une même session de noyau ne peut pas courir sous deux noms. Une clé copiée sur deux machines se sabote toute seule : les identifiants de démarrage alternent et la série repart à zéro.</p></article>
-  <article class="card"><h2>Inscriptions freinées</h2><p>Chaque inscription coûte une preuve de travail et reste limitée par adresse IP. Remplir le classement de faux comptes n'apporte rien : ils partent tous de zéro.</p></article>
+  <article class="card"><h2>The score is the observed time</h2><p>The leaderboard never reads the reported uptime. It measures how long the server has seen you respond, using its own clock. A machine that reports 400 days starts at zero like everyone else.</p></article>
+  <article class="card"><h2>No time travel</h2><p>Nobody gains more than one second per second, and nobody can go back past their enrolment date. To show a year, you have to last a year.</p></article>
+  <article class="card"><h2>Every heartbeat is signed</h2><p>The Ed25519 key is generated on your machine and never leaves it. The server sends a single-use challenge, valid for one minute. A heartbeat cannot be forged, replayed or prepared in advance.</p></article>
+  <article class="card"><h2>What resets the counter</h2><p>A new kernel boot id, an uptime that goes backwards or drifts from the server clock, or more than {{.MaxGap}} minutes of silence. A server outage does not penalize you.</p></article>
+  <article class="card"><h2>One boot, one machine</h2><p>A single kernel session cannot race under two names. A key copied to two machines sabotages itself: the boot ids alternate and the streak resets to zero.</p></article>
+  <article class="card"><h2>Throttled enrolment</h2><p>Each enrolment costs a proof of work and is limited per IP address. Filling the leaderboard with fake accounts gains nothing: they all start from zero.</p></article>
 </section>
 
 <section class="panel panel-text">
-  <h2>La limite, sans détour</h2>
-  <p>Un agent modifié peut mentir sur l'identifiant de démarrage et masquer un redémarrage rapide. Il peut aussi tourner sur un serveur très disponible plutôt que sur votre PC. Sans puce de confiance, aucun logiciel ne peut l'empêcher. Mais ce tricheur doit quand même garder un programme en ligne, sans interruption, pendant toute la durée affichée. Il n'obtient aucun raccourci dans le temps.</p>
+  <h2>The limit, plainly</h2>
+  <p>A modified agent can lie about the boot id and hide a quick reboot. It can also run on a highly available server instead of your PC. Without a trusted chip, no software can prevent this. But the cheater must still keep a program online, without interruption, for the whole displayed duration. There is no shortcut in time.</p>
 </section>
 {{end}}

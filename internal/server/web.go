@@ -34,22 +34,22 @@ var agentFiles = map[string]bool{
 type page struct{ tmpl *template.Template }
 
 var reasonLabels = map[string]string{
-	ReasonReboot:  "Redémarrage",
-	ReasonGap:     "Silence trop long",
-	ReasonAnomaly: "Uptime incohérent",
+	ReasonReboot:  "Reboot",
+	ReasonGap:     "Silent for too long",
+	ReasonAnomaly: "Inconsistent uptime",
 }
 
 func formatDuration(ms int64) string {
 	sec := ms / 1000
 	d, h, m, s := sec/86400, sec/3600%24, sec/60%60, sec%60
 	if d > 0 {
-		return fmt.Sprintf("%d j %02d:%02d:%02d", d, h, m, s)
+		return fmt.Sprintf("%d d %02d:%02d:%02d", d, h, m, s)
 	}
 	return fmt.Sprintf("%02d:%02d:%02d", h, m, s)
 }
 
 func formatTime(ms int64) string {
-	return time.UnixMilli(ms).UTC().Format("02/01/2006 15:04 UTC")
+	return time.UnixMilli(ms).UTC().Format("2006-01-02 15:04 UTC")
 }
 
 func (s *Server) loadWeb() error {
@@ -117,7 +117,7 @@ func (s *Server) board(w http.ResponseWriter, tab string) {
 		leaderMs = snap.Racing[0].StreakMs
 	}
 	s.render(w, http.StatusOK, "board", map[string]any{
-		"Title": "Classement", "Nav": "board", "Tab": tab, "Rows": rows, "Snap": snap,
+		"Title": "Leaderboard", "Nav": "board", "Tab": tab, "Rows": rows, "Snap": snap,
 		"Racing": len(snap.Ranks), "LeaderMs": leaderMs,
 		"LeaderOnline": len(snap.Racing) > 0 && snap.Racing[0].Online,
 	})
@@ -167,13 +167,13 @@ func (s *Server) handleMachine(w http.ResponseWriter, r *http.Request) {
 
 func (s *Server) handleInstall(w http.ResponseWriter, _ *http.Request) {
 	s.render(w, http.StatusOK, "install", map[string]any{
-		"Title": "Installer l'agent", "Nav": "install", "AgentImage": s.cfg.AgentImage,
+		"Title": "Install the agent", "Nav": "install", "AgentImage": s.cfg.AgentImage,
 	})
 }
 
 func (s *Server) handleFairPlay(w http.ResponseWriter, _ *http.Request) {
 	s.render(w, http.StatusOK, "fairplay", map[string]any{
-		"Title": "Fair-play", "Nav": "fairplay", "MaxGap": int(s.cfg.MaxGap.Minutes()),
+		"Title": "Fair play", "Nav": "fairplay", "MaxGap": int(s.cfg.MaxGap.Minutes()),
 	})
 }
 
@@ -182,7 +182,7 @@ func (s *Server) handleNotFound(w http.ResponseWriter, r *http.Request) {
 		writeError(w, http.StatusNotFound, "not found")
 		return
 	}
-	s.render(w, http.StatusNotFound, "notfound", map[string]any{"Title": "Page introuvable"})
+	s.render(w, http.StatusNotFound, "notfound", map[string]any{"Title": "Page not found"})
 }
 
 func (s *Server) handleInstallScript(w http.ResponseWriter, _ *http.Request) {

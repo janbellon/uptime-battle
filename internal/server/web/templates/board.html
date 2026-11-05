@@ -1,39 +1,39 @@
 {{define "content"}}
 <section class="hero">
-  <h1>Qui tiendra le plus longtemps&nbsp;?</h1>
-  <p>Chaque seconde est vérifiée par le serveur. Un redémarrage, et le compteur retombe à zéro.</p>
+  <h1>Who will last the longest?</h1>
+  <p>Every second is verified by the server. One reboot and the counter drops back to zero.</p>
 </section>
 
-<section class="tiles" aria-label="Chiffres clés">
+<section class="tiles" aria-label="Key figures">
   <div class="tile tile-hero">
-    <span class="tile-label">Leader actuel</span>
+    <span class="tile-label">Current leader</span>
     {{if .Snap.Racing}}{{with index .Snap.Racing 0}}
     <span class="tile-value mono" {{if .Online}}data-tick="{{.StreakMs}}"{{end}}>{{duration .StreakMs}}</span>
     <a class="tile-sub" href="/m/{{.Name}}">{{.Name}}</a>
     {{end}}{{else}}
     <span class="tile-value mono">--:--:--</span>
-    <span class="tile-sub">Place à prendre</span>
+    <span class="tile-sub">Up for grabs</span>
     {{end}}
   </div>
-  <div class="tile"><span class="tile-label">En course</span><span class="tile-value mono">{{.Racing}}</span><span class="tile-sub">{{.Snap.Online}} en ligne</span></div>
-  <div class="tile"><span class="tile-label">Inscrites</span><span class="tile-value mono">{{.Snap.Totals.Machines}}</span><span class="tile-sub">machines</span></div>
-  <div class="tile"><span class="tile-label">Temps cumulé</span><span class="tile-value mono tile-value-sm">{{duration .Snap.Totals.TotalMs}}</span><span class="tile-sub">vérifié par le serveur</span></div>
+  <div class="tile"><span class="tile-label">Racing</span><span class="tile-value mono">{{.Racing}}</span><span class="tile-sub">{{.Snap.Online}} online</span></div>
+  <div class="tile"><span class="tile-label">Enrolled</span><span class="tile-value mono">{{.Snap.Totals.Machines}}</span><span class="tile-sub">machines</span></div>
+  <div class="tile"><span class="tile-label">Total time</span><span class="tile-value mono tile-value-sm">{{duration .Snap.Totals.TotalMs}}</span><span class="tile-sub">verified by the server</span></div>
 </section>
 
 <section class="panel">
   <div class="panel-head">
     <div class="tabs">
-      <a href="/" {{if eq .Tab "racing"}}aria-current="page"{{end}}>En course</a>
+      <a href="/" {{if eq .Tab "racing"}}aria-current="page"{{end}}>Racing</a>
       <a href="/records" {{if eq .Tab "records"}}aria-current="page"{{end}}>Records</a>
     </div>
-    <span class="muted small">{{if eq .Tab "racing"}}Séries en cours{{else}}Meilleures séries de tous les temps{{end}} · top 100</span>
+    <span class="muted small">{{if eq .Tab "racing"}}Current streaks{{else}}Best streaks of all time{{end}} · top 100</span>
   </div>
   {{if .Rows}}
   <table class="board">
     <thead><tr>
       <th class="c-rank" scope="col">#</th><th scope="col">Machine</th>
-      <th class="c-status" scope="col">État</th>
-      <th class="c-num" scope="col">{{if eq .Tab "racing"}}Uptime vérifié{{else}}Record{{end}}</th>
+      <th class="c-status" scope="col">Status</th>
+      <th class="c-num" scope="col">{{if eq .Tab "racing"}}Verified uptime{{else}}Record{{end}}</th>
       {{if eq .Tab "racing"}}<th class="c-num c-opt" scope="col">Record</th>{{end}}
     </tr></thead>
     <tbody>
@@ -45,9 +45,9 @@
         <progress class="bar" max="100" value="{{pct .BarPct}}" aria-hidden="true"></progress>
       </td>
       <td class="c-status">
-        {{if .Online}}<span class="st st-on"><i></i>En ligne</span>
-        {{else if .Racing}}<span class="st st-wait"><i></i>En sursis</span>
-        {{else}}<span class="st st-off"><i></i>Hors course</span>{{end}}
+        {{if .Online}}<span class="st st-on"><i></i>Online</span>
+        {{else if .Racing}}<span class="st st-wait"><i></i>Grace period</span>
+        {{else}}<span class="st st-off"><i></i>Out of the race</span>{{end}}
       </td>
       {{if eq $.Tab "racing"}}
       <td class="c-num mono" {{if .Online}}data-tick="{{.StreakMs}}"{{end}}>{{duration .StreakMs}}</td>
@@ -61,9 +61,9 @@
   </table>
   {{else}}
   <div class="empty">
-    <h2>{{if eq .Tab "racing"}}Personne en course pour l'instant{{else}}Aucun record pour l'instant{{end}}</h2>
-    <p>Installez l'agent et prenez la première place.</p>
-    <a class="btn" href="/install">Installer l'agent</a>
+    <h2>{{if eq .Tab "racing"}}Nobody is racing yet{{else}}No records yet{{end}}</h2>
+    <p>Install the agent and take first place.</p>
+    <a class="btn" href="/install">Install the agent</a>
   </div>
   {{end}}
 </section>

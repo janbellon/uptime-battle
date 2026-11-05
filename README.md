@@ -7,8 +7,6 @@ The project has two parts:
 - The agent: a static Go binary of about 6 MB, with no dependencies and no privileges. It reads `/proc/uptime` and the kernel boot id, nothing else.
 - The web application: a Go binary with an SQLite database, shipped in a `scratch` image that also contains the agent binaries it distributes.
 
-The web interface is in French.
-
 ![Leaderboard page of the web interface, with demo data](docs/screenshot.png)
 
 ## Deployment
